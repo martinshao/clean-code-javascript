@@ -872,3 +872,93 @@ inventoryTracker("apples", req, "www.inventory-awesome.io");
 ```
 
 ## 对象和数据结构
+
+### 使用 getters 和 setters
+
+使用getter和setter访问对象上的数据可能比简单查找对象属性要好。你可能会问：为什么啊？下面这个清单可以回答你的这个困惑：
+
+* 当你想做的不仅仅是获取一个对象属性，你不必查找和改变代码中的每个访问器。
+* 是添加验证在执行集合时变得简单。
+* 封装内部的逻辑
+* 当使用getter和setter时，更容易添加日志和错误处理
+* 可以延迟加载对象的属性，比如从服务器上获取的属性
+
+**Bad:**
+``` js
+function makeBankAccount() {
+  // ...
+
+  return {
+    balance: 0
+    // ...
+  };
+}
+
+const account = makeBankAccount();
+account.balance = 100;
+```
+
+**Good:**
+``` js
+function makeBankAccount() {
+  // this one is private
+  let balance = 0;
+
+  // a "getter", made public via the returned object below
+  function getBalance() {
+    return balance;
+  }
+
+  // a "setter", made public via the returned object below
+  function setBalance(amount) {
+    // ... validate before updating the balance
+    balance = amount;
+  }
+
+  return {
+    // ...
+    getBalance,
+    setBalance
+  };
+}
+
+const account = makeBankAccount();
+account.setBalance(100);
+```
+
+### 为对象添加私有成员变量
+
+这个方法可以通过闭包实现(对于ES5及以下版本)
+
+**Bad:**
+``` js
+const Employee = function(name) {
+  this.name = name;
+};
+
+Employee.prototype.getName = function getName() {
+  return this.name;
+};
+
+const employee = new Employee("John Doe");
+console.log(`Employee name: ${employee.getName()}`); // Employee name: John Doe
+delete employee.name;
+console.log(`Employee name: ${employee.getName()}`); // Employee name: undefined
+```
+
+**Good:**
+``` js
+function makeEmployee(name) {
+  return {
+    getName() {
+      return name;
+    }
+  };
+}
+
+const employee = makeEmployee("John Doe");
+console.log(`Employee name: ${employee.getName()}`); // Employee name: John Doe
+delete employee.name;
+console.log(`Employee name: ${employee.getName()}`); // Employee name: John Doe
+```
+
