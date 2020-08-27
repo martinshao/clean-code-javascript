@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <script>
+    class Math {
+      constructor(value) {
+        console.info('value...', value)
+        let hasInitValue = true;
+        if (value === undefined) {
+          console.info('value === undefined', value === undefined)
+          value = NaN;
+          hasInitValue = false;
+        }
+        console.info('hasInitValue...', hasInitValue)
+        Object.defineProperties(this, {
+          value: {
+            enumerable: true,
+            value: value,
+          },
+          hasInitValue: {
+            enumerable: false,
+            value: hasInitValue,
+          },
+        });
+      }
+
+      add(...args) {
+        const init = this.hasInitValue ? this.value : args.shift();
+        const value = args.reduce((pv, cv) => pv + cv, init);
+        return new Math(value);
+      }
+
+      minus(...args) {
+        const init = this.hasInitValue ? this.value : args.shift();
+        const value = args.reduce((pv, cv) => pv - cv, init);
+        return new Math(value);
+      }
+
+      times(...args) {
+        const init = this.hasInitValue ? this.value : args.shift();
+        const value = args.reduce((pv, cv) => pv * cv, init);
+        return new Math(value);
+      }
+
+      divide(...args) {
+        const init = this.hasInitValue ? this.value : args.shift();
+        const value = args.reduce((pv, cv) => pv / cv, init);
+        return new Math(value);
+      }
+
+      toJSON() {
+        console.info('toJSON')
+        return this.valueOf();
+      }
+
+      toString() {
+        console.info('toString')
+        return String(this.valueOf());
+      }
+
+      valueOf() {
+        console.info('valueOf')
+        return this.value;
+      }
+
+      [Symbol.toPrimitive](hint) {
+        console.info('Symbol.toPrimitive')
+        const value = this.value;
+        if (hint === 'string') {
+          return String(value);
+        } else {
+          return value;
+        }
+      }
+    }
+
+    const math = new Math()
+  </script>
+</body>
+
+</html>
