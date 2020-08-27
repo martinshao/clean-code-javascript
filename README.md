@@ -1804,3 +1804,123 @@ getdata()
   });
 ```
 
+## 格式化
+
+首先，格式化是非常主观的事情。像这里的许多规则一样，没有你必须遵守的硬性规定。要点是不要争论格式。有大量的工具可以自动化实现这点。选择一个用就好了，开发人员为了这个争论就是浪费时间和金钱。
+
+对于不属于自动格式化范围的内容(缩进、制表符与空格、双引号与单引号等)，请参考此处的一些指导。
+
+### 使用一致的大写字母
+
+JavaScript是弱类型的语言，所以大写字母会告诉你很多关于变量、函数的信息。这些规则是主观的，所以你的团队根据具体情况进行选择，关键是，无论怎么选择，只要保证统一一致就好。
+
+**Bad:**
+``` js
+const DAYS_IN_WEEK = 7;
+const daysInMonth = 30;
+
+const songs = ["Back In Black", "Stairway to Heaven", "Hey Jude"];
+const Artists = ["ACDC", "Led Zeppelin", "The Beatles"];
+
+function eraseDatabase() {}
+function restore_database() {}
+
+class animal {}
+class Alpaca {}
+```
+
+**Good:**
+``` js
+const DAYS_IN_WEEK = 7;
+const DAYS_IN_MONTH = 30;
+
+const SONGS = ["Back In Black", "Stairway to Heaven", "Hey Jude"];
+const ARTISTS = ["ACDC", "Led Zeppelin", "The Beatles"];
+
+function eraseDatabase() {}
+function restoreDatabase() {}
+
+class Animal {}
+class Alpaca {}
+```
+
+### 函数的调用方和被调用方应该靠近
+
+**Bad:**
+``` js
+class PerformanceReview {
+  constructor(employee) {
+    this.employee = employee;
+  }
+
+  lookupPeers() {
+    return db.lookup(this.employee, "peers");
+  }
+
+  lookupManager() {
+    return db.lookup(this.employee, "manager");
+  }
+
+  getPeerReviews() {
+    const peers = this.lookupPeers();
+    // ...
+  }
+
+  perfReview() {
+    this.getPeerReviews();
+    this.getManagerReview();
+    this.getSelfReview();
+  }
+
+  getManagerReview() {
+    const manager = this.lookupManager();
+  }
+
+  getSelfReview() {
+    // ...
+  }
+}
+
+const review = new PerformanceReview(employee);
+review.perfReview();
+```
+
+**Good:**
+``` js
+class PerformanceReview {
+  constructor(employee) {
+    this.employee = employee;
+  }
+
+  perfReview() {
+    this.getPeerReviews();
+    this.getManagerReview();
+    this.getSelfReview();
+  }
+
+  getPeerReviews() {
+    const peers = this.lookupPeers();
+    // ...
+  }
+
+  lookupPeers() {
+    return db.lookup(this.employee, "peers");
+  }
+
+  getManagerReview() {
+    const manager = this.lookupManager();
+  }
+
+  lookupManager() {
+    return db.lookup(this.employee, "manager");
+  }
+
+  getSelfReview() {
+    // ...
+  }
+}
+
+const review = new PerformanceReview(employee);
+review.perfReview();
+```
+
