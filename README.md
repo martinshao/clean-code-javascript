@@ -1812,15 +1812,16 @@ getdata()
 
 ### 使用一致的大写字母
 
-JavaScript是弱类型的语言，所以大写字母会告诉你很多关于变量、函数的信息。这些规则是主观的，所以你的团队根据具体情况进行选择，关键是，无论怎么选择，只要保证统一一致就好。
+JavaScript 是弱类型的语言，所以大写字母会告诉你很多关于变量、函数的信息。这些规则是主观的，所以你的团队根据具体情况进行选择，关键是，无论怎么选择，只要保证统一一致就好。
 
 **Bad:**
-``` js
+
+```js
 const DAYS_IN_WEEK = 7;
 const daysInMonth = 30;
 
-const songs = ["Back In Black", "Stairway to Heaven", "Hey Jude"];
-const Artists = ["ACDC", "Led Zeppelin", "The Beatles"];
+const songs = ['Back In Black', 'Stairway to Heaven', 'Hey Jude'];
+const Artists = ['ACDC', 'Led Zeppelin', 'The Beatles'];
 
 function eraseDatabase() {}
 function restore_database() {}
@@ -1830,12 +1831,13 @@ class Alpaca {}
 ```
 
 **Good:**
-``` js
+
+```js
 const DAYS_IN_WEEK = 7;
 const DAYS_IN_MONTH = 30;
 
-const SONGS = ["Back In Black", "Stairway to Heaven", "Hey Jude"];
-const ARTISTS = ["ACDC", "Led Zeppelin", "The Beatles"];
+const SONGS = ['Back In Black', 'Stairway to Heaven', 'Hey Jude'];
+const ARTISTS = ['ACDC', 'Led Zeppelin', 'The Beatles'];
 
 function eraseDatabase() {}
 function restoreDatabase() {}
@@ -1847,18 +1849,19 @@ class Alpaca {}
 ### 函数的调用方和被调用方应该靠近
 
 **Bad:**
-``` js
+
+```js
 class PerformanceReview {
   constructor(employee) {
     this.employee = employee;
   }
 
   lookupPeers() {
-    return db.lookup(this.employee, "peers");
+    return db.lookup(this.employee, 'peers');
   }
 
   lookupManager() {
-    return db.lookup(this.employee, "manager");
+    return db.lookup(this.employee, 'manager');
   }
 
   getPeerReviews() {
@@ -1886,7 +1889,8 @@ review.perfReview();
 ```
 
 **Good:**
-``` js
+
+```js
 class PerformanceReview {
   constructor(employee) {
     this.employee = employee;
@@ -1904,7 +1908,7 @@ class PerformanceReview {
   }
 
   lookupPeers() {
-    return db.lookup(this.employee, "peers");
+    return db.lookup(this.employee, 'peers');
   }
 
   getManagerReview() {
@@ -1912,7 +1916,7 @@ class PerformanceReview {
   }
 
   lookupManager() {
-    return db.lookup(this.employee, "manager");
+    return db.lookup(this.employee, 'manager');
   }
 
   getSelfReview() {
@@ -1924,3 +1928,120 @@ const review = new PerformanceReview(employee);
 review.perfReview();
 ```
 
+## 注释
+
+### 只注释复杂的业务逻辑
+
+**Bad:**
+
+```js
+function hashIt(data) {
+  // The hash
+  let hash = 0;
+
+  // Length of string
+  const length = data.length;
+
+  // Loop through every character in data
+  for (let i = 0; i < length; i++) {
+    // Get character code.
+    const char = data.charCodeAt(i);
+    // Make the hash
+    hash = (hash << 5) - hash + char;
+    // Convert to 32-bit integer
+    hash &= hash;
+  }
+}
+```
+
+**Good:**
+
+```js
+function hashIt(data) {
+  let hash = 0;
+  const length = data.length;
+
+  for (let i = 0; i < length; i++) {
+    const char = data.charCodeAt(i);
+    hash = (hash << 5) - hash + char;
+
+    // Convert to 32-bit integer
+    hash &= hash;
+  }
+}
+```
+
+### 不要在代码库中留下注释掉的代码
+
+**Bad:**
+
+```js
+doStuff();
+// doOtherStuff();
+// doSomeMoreStuff();
+// doSoMuchStuff();
+```
+
+**Good:**
+
+```js
+doStuff();
+```
+
+### 不要有日志类的注释
+
+Bad:
+
+```js
+/**
+ * 2016-12-20: Removed monads, didn't understand them (RM)
+ * 2016-10-01: Improved using special monads (JP)
+ * 2016-02-03: Removed type-checking (LI)
+ * 2015-03-14: Added combine with type-checking (JR)
+ */
+function combine(a, b) {
+  return a + b;
+}
+```
+
+**Good:**
+
+```js
+function combine(a, b) {
+  return a + b;
+}
+```
+
+### 避免使用标记位置注释
+
+**Bad:**
+
+```js
+////////////////////////////////////////////////////////////////////////////////
+// Scope Model Instantiation
+////////////////////////////////////////////////////////////////////////////////
+$scope.model = {
+  menu: 'foo',
+  nav: 'bar',
+};
+
+////////////////////////////////////////////////////////////////////////////////
+// Action setup
+////////////////////////////////////////////////////////////////////////////////
+const actions = function () {
+  // ...
+};
+```
+
+**Good:**
+
+```js
+$scope.model = {
+  menu: 'foo',
+  nav: 'bar',
+};
+
+const actions = function () {
+  // ...
+};
+```
