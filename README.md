@@ -1326,12 +1326,13 @@ class HttpRequester {
 
 ### 里氏替换原则 Liskov Substitution Principle (LSP)
 
-这个概念可能非常简单，但是名词看上去容易让人一头雾水。它的正式的定义是“如果 S 是 T 的一个子类型，那么T 类型的对象可以被S类型的对象替换（即，S 类型的对象可以替换T类型的对象），而不会改变该程序的任何期望属性（正确性、执行的任务等？”，额，这个定义看上去更可怕了。
+这个概念可能非常简单，但是名词看上去容易让人一头雾水。它的正式的定义是“如果 S 是 T 的一个子类型，那么 T 类型的对象可以被 S 类型的对象替换（即，S 类型的对象可以替换 T 类型的对象），而不会改变该程序的任何期望属性（正确性、执行的任务等？”，额，这个定义看上去更可怕了。
 
 最好的解释是这样的，如果有父类和子类，那么基类和子类可以互换使用，而不会得到错误的结果。这可能仍然令人困惑，所以还是从实际例子出发，看看典型的方形矩形的示例。从数学上讲，正方形是一个矩形，但如果通过继承使用 'is-a' 关系对其进行建模，则很快就会遇到麻烦。
 
 **Bad:**
-``` jsx
+
+```jsx
 class Rectangle {
   constructor() {
     this.width = 0;
@@ -1372,7 +1373,7 @@ class Square extends Rectangle {
 }
 
 function renderLargeRectangles(rectangles) {
-  rectangles.forEach(rectangle => {
+  rectangles.forEach((rectangle) => {
     rectangle.setWidth(4);
     rectangle.setHeight(5);
     const area = rectangle.getArea(); // BAD: Returns 25 for Square. Should be 20.
@@ -1385,7 +1386,8 @@ renderLargeRectangles(rectangles);
 ```
 
 **Good:**
-``` js
+
+```js
 class Shape {
   setColor(color) {
     // ...
@@ -1420,7 +1422,7 @@ class Square extends Shape {
 }
 
 function renderLargeShapes(shapes) {
-  shapes.forEach(shape => {
+  shapes.forEach((shape) => {
     const area = shape.getArea();
     shape.render(area);
   });
@@ -1432,14 +1434,15 @@ renderLargeShapes(shapes);
 
 ### 接口隔离原则 Interface Segregation Principle (ISP)
 
-JavaScript没有接口的概念，所以这个原则并不想其他原则那样严格使用。然而，即使在JavaScript缺少类型系统的情况下，它也非常重要。
+JavaScript 没有接口的概念，所以这个原则并不想其他原则那样严格使用。然而，即使在 JavaScript 缺少类型系统的情况下，它也非常重要。
 
-ISP 强调“不应该强迫客户端依赖于他们不使用的接口。”接口是JavaScript中的隐形契约，因为duck类型。
+ISP 强调“不应该强迫客户端依赖于他们不使用的接口。”接口是 JavaScript 中的隐形契约，因为 duck 类型。
 
 在 JavaScript 中演示这一原理的一个很好的例子是针对需要大型设置对象的类。不要求客户端设置大量的选项是有益的，因为大多数时候他们不需要所有的设置。将它们设为可选有助于防止出现“胖接口”。
 
 **Bad:**
-``` js
+
+```js
 class DOMTraverser {
   constructor(settings) {
     this.settings = settings;
@@ -1457,14 +1460,15 @@ class DOMTraverser {
 }
 
 const $ = new DOMTraverser({
-  rootNode: document.getElementsByTagName("body"),
-  animationModule() {} // Most of the time, we won't need to animate when traversing.
+  rootNode: document.getElementsByTagName('body'),
+  animationModule() {}, // Most of the time, we won't need to animate when traversing.
   // ...
 });
 ```
 
 **Good:**
-``` js
+
+```js
 class DOMTraverser {
   constructor(settings) {
     this.settings = settings;
@@ -1489,28 +1493,30 @@ class DOMTraverser {
 }
 
 const $ = new DOMTraverser({
-  rootNode: document.getElementsByTagName("body"),
+  rootNode: document.getElementsByTagName('body'),
   options: {
-    animationModule() {}
-  }
+    animationModule() {},
+  },
 });
 ```
 
 ### 依赖反转原则 Dependency Inversion Principle (DIP)
 
 这个原则有两个核心要领：
+
 1. 高级模块不应该依赖于低级模块。两者都应该依赖于抽象。
 2. 抽象不应依赖细节。细节应该依赖抽象。
 
-这一点一开始可能很难理解，但如果你使用过AngularJS，你就会看到依赖注入(DI)形式的这一原则的经典实现。虽然它们不是完全相同的概念，但是DIP阻止高级模块了解其低级模块的细节并设置它们。它可以通过DI实现这一点。这样做的一个巨大好处是减少了模块之间的耦合。耦合是一种非常糟糕的开发模式，因为它使代码很难重构。
+这一点一开始可能很难理解，但如果你使用过 AngularJS，你就会看到依赖注入(DI)形式的这一原则的经典实现。虽然它们不是完全相同的概念，但是 DIP 阻止高级模块了解其低级模块的细节并设置它们。它可以通过 DI 实现这一点。这样做的一个巨大好处是减少了模块之间的耦合。耦合是一种非常糟糕的开发模式，因为它使代码很难重构。
 
-如前面所述，JavaScript没有接口，因此依赖的抽象是隐式锲约。也就是说，一个对象/类向另一个对象/类公开的方法和属性。在下面的示例中，隐式约定是 InventoryTracker 的任何请求模块都将具有一个 requestItems 方法。
+如前面所述，JavaScript 没有接口，因此依赖的抽象是隐式锲约。也就是说，一个对象/类向另一个对象/类公开的方法和属性。在下面的示例中，隐式约定是 InventoryTracker 的任何请求模块都将具有一个 requestItems 方法。
 
 **Bad:**
-``` js
+
+```js
 class InventoryRequester {
   constructor() {
-    this.REQ_METHODS = ["HTTP"];
+    this.REQ_METHODS = ['HTTP'];
   }
 
   requestItem(item) {
@@ -1528,18 +1534,19 @@ class InventoryTracker {
   }
 
   requestItems() {
-    this.items.forEach(item => {
+    this.items.forEach((item) => {
       this.requester.requestItem(item);
     });
   }
 }
 
-const inventoryTracker = new InventoryTracker(["apples", "bananas"]);
+const inventoryTracker = new InventoryTracker(['apples', 'bananas']);
 inventoryTracker.requestItems();
 ```
 
 **Good:**
-``` js
+
+```js
 class InventoryTracker {
   constructor(items, requester) {
     this.items = items;
@@ -1547,7 +1554,7 @@ class InventoryTracker {
   }
 
   requestItems() {
-    this.items.forEach(item => {
+    this.items.forEach((item) => {
       this.requester.requestItem(item);
     });
   }
@@ -1555,7 +1562,7 @@ class InventoryTracker {
 
 class InventoryRequesterV1 {
   constructor() {
-    this.REQ_METHODS = ["HTTP"];
+    this.REQ_METHODS = ['HTTP'];
   }
 
   requestItem(item) {
@@ -1565,7 +1572,7 @@ class InventoryRequesterV1 {
 
 class InventoryRequesterV2 {
   constructor() {
-    this.REQ_METHODS = ["WS"];
+    this.REQ_METHODS = ['WS'];
   }
 
   requestItem(item) {
@@ -1576,7 +1583,7 @@ class InventoryRequesterV2 {
 // By constructing our dependencies externally and injecting them, we can easily
 // substitute our request module for a fancy new one that uses WebSockets.
 const inventoryTracker = new InventoryTracker(
-  ["apples", "bananas"],
+  ['apples', 'bananas'],
   new InventoryRequesterV2()
 );
 inventoryTracker.requestItems();
@@ -1584,82 +1591,85 @@ inventoryTracker.requestItems();
 
 ## 测试
 
-发布上线前测试代码很重要。如果你没有测试或者测试覆盖率不够，那么每次你发布代码时，你都不能确定你是否会对生产环境产生破坏性影响。什么是足够的测试量取决于你的团队，但是100%的覆盖率(涵盖所有判断和条件分支语句)是作为开发人员的我们能够获得更高信心和安心的好方法。这意味着除了拥有一个优秀的测试框架外，您还需要使用一个好的覆盖工具。
+发布上线前测试代码很重要。如果你没有测试或者测试覆盖率不够，那么每次你发布代码时，你都不能确定你是否会对生产环境产生破坏性影响。什么是足够的测试量取决于你的团队，但是 100%的覆盖率(涵盖所有判断和条件分支语句)是作为开发人员的我们能够获得更高信心和安心的好方法。这意味着除了拥有一个优秀的测试框架外，您还需要使用一个好的覆盖工具。
 
-没有理由不写测试。有很多好的JS测试框架，所以找到一个你团队喜欢的。当你找到一个适合你团队的工具时，你就要为你引入的每一个新特性/模块编写测试。如果您首选的方法是测试驱动开发(TDD)，那就太好了，但要点是在启动任何特性或重构现有特性之前，确保您达到了覆盖率目标。
+没有理由不写测试。有很多好的 JS 测试框架，所以找到一个你团队喜欢的。当你找到一个适合你团队的工具时，你就要为你引入的每一个新特性/模块编写测试。如果您首选的方法是测试驱动开发(TDD)，那就太好了，但要点是在启动任何特性或重构现有特性之前，确保您达到了覆盖率目标。
 
 ### 每次测试一个概念
 
 **Bad:**
-``` js
-import assert from "assert";
 
-describe("MomentJS", () => {
-  it("handles date boundaries", () => {
+```js
+import assert from 'assert';
+
+describe('MomentJS', () => {
+  it('handles date boundaries', () => {
     let date;
 
-    date = new MomentJS("1/1/2015");
+    date = new MomentJS('1/1/2015');
     date.addDays(30);
-    assert.equal("1/31/2015", date);
+    assert.equal('1/31/2015', date);
 
-    date = new MomentJS("2/1/2016");
+    date = new MomentJS('2/1/2016');
     date.addDays(28);
-    assert.equal("02/29/2016", date);
+    assert.equal('02/29/2016', date);
 
-    date = new MomentJS("2/1/2015");
+    date = new MomentJS('2/1/2015');
     date.addDays(28);
-    assert.equal("03/01/2015", date);
+    assert.equal('03/01/2015', date);
   });
 });
 ```
 
 **Good:**
-``` js
-import assert from "assert";
 
-describe("MomentJS", () => {
-  it("handles 30-day months", () => {
-    const date = new MomentJS("1/1/2015");
+```js
+import assert from 'assert';
+
+describe('MomentJS', () => {
+  it('handles 30-day months', () => {
+    const date = new MomentJS('1/1/2015');
     date.addDays(30);
-    assert.equal("1/31/2015", date);
+    assert.equal('1/31/2015', date);
   });
 
-  it("handles leap year", () => {
-    const date = new MomentJS("2/1/2016");
+  it('handles leap year', () => {
+    const date = new MomentJS('2/1/2016');
     date.addDays(28);
-    assert.equal("02/29/2016", date);
+    assert.equal('02/29/2016', date);
   });
 
-  it("handles non-leap year", () => {
-    const date = new MomentJS("2/1/2015");
+  it('handles non-leap year', () => {
+    const date = new MomentJS('2/1/2015');
     date.addDays(28);
-    assert.equal("03/01/2015", date);
+    assert.equal('03/01/2015', date);
   });
 });
 ```
 
 ## 并发
 
-### 使用Promise，不要使用回调函数
+### 使用 Promise，不要使用回调函数
 
-回调函数会导致多层的嵌套，十分不简洁。随着ES6时代的到来，让我全面拥抱Promise这个内置的全局对象。
+回调函数会导致多层的嵌套，十分不简洁。随着 ES6 时代的到来，让我全面拥抱 Promise 这个内置的全局对象。
 
 **Bad:**
-``` js
-import { get } from "request";
-import { writeFile } from "fs";
+
+```js
+import { get } from 'request';
+import { writeFile } from 'fs';
 
 get(
-  "https://en.wikipedia.org/wiki/Robert_Cecil_Martin",
+  'https://en.wikipedia.org/wiki/Robert_Cecil_Martin',
   (requestErr, response, body) => {
     if (requestErr) {
       console.error(requestErr);
     } else {
-      writeFile("article.html", body, writeErr => {
+      writeFile('article.html', body, (writeErr) => {
         if (writeErr) {
           console.error(writeErr);
         } else {
-          console.log("File written");
+          console.log('File written');
         }
       });
     }
@@ -1668,18 +1678,19 @@ get(
 ```
 
 **Good:**
-``` js
-import { get } from "request-promise";
-import { writeFile } from "fs-extra";
 
-get("https://en.wikipedia.org/wiki/Robert_Cecil_Martin")
-  .then(body => {
-    return writeFile("article.html", body);
+```js
+import { get } from 'request-promise';
+import { writeFile } from 'fs-extra';
+
+get('https://en.wikipedia.org/wiki/Robert_Cecil_Martin')
+  .then((body) => {
+    return writeFile('article.html', body);
   })
   .then(() => {
-    console.log("File written");
+    console.log('File written');
   })
-  .catch(err => {
+  .catch((err) => {
     console.error(err);
   });
 ```
@@ -1689,39 +1700,107 @@ get("https://en.wikipedia.org/wiki/Robert_Cecil_Martin")
 Promise 相比较回调函数已经是一个非常简洁的替代方案，但是 ES2017/ES8 带来了更加简洁的解决方案：Async/Await。你只需要在函数中加一个 async 关键字，就可以避免使用一系列函数而强制地编写逻辑。如果你可以使用 ES2017/ES8 的新特性，那就赶紧使用它吧。
 
 **Bad:**
-``` js
-import { get } from "request-promise";
-import { writeFile } from "fs-extra";
 
-get("https://en.wikipedia.org/wiki/Robert_Cecil_Martin")
-  .then(body => {
-    return writeFile("article.html", body);
+```js
+import { get } from 'request-promise';
+import { writeFile } from 'fs-extra';
+
+get('https://en.wikipedia.org/wiki/Robert_Cecil_Martin')
+  .then((body) => {
+    return writeFile('article.html', body);
   })
   .then(() => {
-    console.log("File written");
+    console.log('File written');
   })
-  .catch(err => {
+  .catch((err) => {
     console.error(err);
   });
 ```
 
 **Good:**
-``` js
-import { get } from "request-promise";
-import { writeFile } from "fs-extra";
+
+```js
+import { get } from 'request-promise';
+import { writeFile } from 'fs-extra';
 
 async function getCleanCodeArticle() {
   try {
-    const body = await get(
-      "https://en.wikipedia.org/wiki/Robert_Cecil_Martin"
-    );
-    await writeFile("article.html", body);
-    console.log("File written");
+    const body = await get('https://en.wikipedia.org/wiki/Robert_Cecil_Martin');
+    await writeFile('article.html', body);
+    console.log('File written');
   } catch (err) {
     console.error(err);
   }
 }
 
-getCleanCodeArticle()
+getCleanCodeArticle();
+```
+
+## 错误处理
+
+抛出异常是正确的操作。它们意味着运行时已经成功地识别出程序中的错误，并通过停止当前堆栈上的函数执行，终止进程(在节点中)并在控制台中用堆栈跟踪通知您来通知你。
+
+### 不要忘记捕获异常
+
+对抛出的异常什么都不做，代码自己不会修复自己或者对错误进行相应处理。不是简单的把异常日志输出到控制台就万事大吉了，因为它很快就会被控制台上输出的其他日志埋没。如果你在代码某个位置使用了 try/catch 包裹，意味着你意识到这里可能会发生异常，那么你也应该为产生的错误编写处理逻辑或者创建上传异常日志的途径。
+
+**Bad:**
+
+```js
+try {
+  functionThatMightThrow();
+} catch (error) {
+  console.log(error);
+}
+```
+
+**Good:**
+
+```js
+try {
+  functionThatMightThrow();
+} catch (error) {
+  // One option (more noisy than console.log):
+  console.error(error);
+  // Another option:
+  notifyUserOfError(error);
+  // Another option:
+  reportErrorToService(error);
+  // OR do all three!
+}
+```
+
+### 不要忘了在 Promise 处理异常
+
+跟上面一样的理由，Promise 提供了对异常处理的途径，我们就不应该忽视对于异常的处理。
+
+**Bad:**
+
+```js
+getdata()
+  .then((data) => {
+    functionThatMightThrow(data);
+  })
+  .catch((error) => {
+    console.log(error);
+  });
+```
+
+**Good:**
+
+```js
+getdata()
+  .then((data) => {
+    functionThatMightThrow(data);
+  })
+  .catch((error) => {
+    // One option (more noisy than console.log):
+    console.error(error);
+    // Another option:
+    notifyUserOfError(error);
+    // Another option:
+    reportErrorToService(error);
+    // OR do all three!
+  });
 ```
 
