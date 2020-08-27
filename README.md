@@ -1637,3 +1637,91 @@ describe("MomentJS", () => {
   });
 });
 ```
+
+## 并发
+
+### 使用Promise，不要使用回调函数
+
+回调函数会导致多层的嵌套，十分不简洁。随着ES6时代的到来，让我全面拥抱Promise这个内置的全局对象。
+
+**Bad:**
+``` js
+import { get } from "request";
+import { writeFile } from "fs";
+
+get(
+  "https://en.wikipedia.org/wiki/Robert_Cecil_Martin",
+  (requestErr, response, body) => {
+    if (requestErr) {
+      console.error(requestErr);
+    } else {
+      writeFile("article.html", body, writeErr => {
+        if (writeErr) {
+          console.error(writeErr);
+        } else {
+          console.log("File written");
+        }
+      });
+    }
+  }
+);
+```
+
+**Good:**
+``` js
+import { get } from "request-promise";
+import { writeFile } from "fs-extra";
+
+get("https://en.wikipedia.org/wiki/Robert_Cecil_Martin")
+  .then(body => {
+    return writeFile("article.html", body);
+  })
+  .then(() => {
+    console.log("File written");
+  })
+  .catch(err => {
+    console.error(err);
+  });
+```
+
+### Async/Await 比 Promise 跟简洁
+
+Promise 相比较回调函数已经是一个非常简洁的替代方案，但是 ES2017/ES8 带来了更加简洁的解决方案：Async/Await。你只需要在函数中加一个 async 关键字，就可以避免使用一系列函数而强制地编写逻辑。如果你可以使用 ES2017/ES8 的新特性，那就赶紧使用它吧。
+
+**Bad:**
+``` js
+import { get } from "request-promise";
+import { writeFile } from "fs-extra";
+
+get("https://en.wikipedia.org/wiki/Robert_Cecil_Martin")
+  .then(body => {
+    return writeFile("article.html", body);
+  })
+  .then(() => {
+    console.log("File written");
+  })
+  .catch(err => {
+    console.error(err);
+  });
+```
+
+**Good:**
+``` js
+import { get } from "request-promise";
+import { writeFile } from "fs-extra";
+
+async function getCleanCodeArticle() {
+  try {
+    const body = await get(
+      "https://en.wikipedia.org/wiki/Robert_Cecil_Martin"
+    );
+    await writeFile("article.html", body);
+    console.log("File written");
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+getCleanCodeArticle()
+```
+
