@@ -1582,3 +1582,58 @@ const inventoryTracker = new InventoryTracker(
 inventoryTracker.requestItems();
 ```
 
+## 测试
+
+发布上线前测试代码很重要。如果你没有测试或者测试覆盖率不够，那么每次你发布代码时，你都不能确定你是否会对生产环境产生破坏性影响。什么是足够的测试量取决于你的团队，但是100%的覆盖率(涵盖所有判断和条件分支语句)是作为开发人员的我们能够获得更高信心和安心的好方法。这意味着除了拥有一个优秀的测试框架外，您还需要使用一个好的覆盖工具。
+
+没有理由不写测试。有很多好的JS测试框架，所以找到一个你团队喜欢的。当你找到一个适合你团队的工具时，你就要为你引入的每一个新特性/模块编写测试。如果您首选的方法是测试驱动开发(TDD)，那就太好了，但要点是在启动任何特性或重构现有特性之前，确保您达到了覆盖率目标。
+
+### 每次测试一个概念
+
+**Bad:**
+``` js
+import assert from "assert";
+
+describe("MomentJS", () => {
+  it("handles date boundaries", () => {
+    let date;
+
+    date = new MomentJS("1/1/2015");
+    date.addDays(30);
+    assert.equal("1/31/2015", date);
+
+    date = new MomentJS("2/1/2016");
+    date.addDays(28);
+    assert.equal("02/29/2016", date);
+
+    date = new MomentJS("2/1/2015");
+    date.addDays(28);
+    assert.equal("03/01/2015", date);
+  });
+});
+```
+
+**Good:**
+``` js
+import assert from "assert";
+
+describe("MomentJS", () => {
+  it("handles 30-day months", () => {
+    const date = new MomentJS("1/1/2015");
+    date.addDays(30);
+    assert.equal("1/31/2015", date);
+  });
+
+  it("handles leap year", () => {
+    const date = new MomentJS("2/1/2016");
+    date.addDays(28);
+    assert.equal("02/29/2016", date);
+  });
+
+  it("handles non-leap year", () => {
+    const date = new MomentJS("2/1/2015");
+    date.addDays(28);
+    assert.equal("03/01/2015", date);
+  });
+});
+```
